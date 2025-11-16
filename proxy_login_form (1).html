@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proxy-Anmeldung</title>
+<style>
+  body {
+    background-color: #ffffff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    color: #000;
+    padding-top: 60px;
+  }
+
+  .dialog {
+    background-color: #f2f2f2;
+    border-radius: 6px;
+    padding: 20px 25px;
+    width: 320px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  }
+
+  .dialog h3 {
+    margin-top: 0;
+    font-size: 16px;
+    font-weight: normal;
+  }
+
+  .dialog p {
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 15px;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    margin: 8px 0 4px;
+  }
+
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 6px 8px;
+    background-color: #fff;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    color: #000;
+    font-size: 14px;
+  }
+
+  .buttons {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  button {
+    border: none;
+    border-radius: 3px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .ok {
+    background-color: #0078d7;
+    color: white;
+  }
+
+  .cancel {
+    background-color: #d3d3d3;
+    color: black;
+  }
+
+  .ok:hover {
+    background-color: #0062b5;
+  }
+
+  .cancel:hover {
+    background-color: #bfbfbf;
+  }
+</style>
+</head>
+<body>
+  <div class="dialog">
+    <h3>Melden Sie sich an, um auf diese Website zuzugreifen.</h3>
+    <p>Der Proxy <strong>http://158.32.162.190</strong> benötigt einen Benutzernamen und ein Kennwort.<br>
+    Ihre Verbindung mit dieser Website ist nicht sicher.</p>
+
+    <form id="loginForm">
+      <label for="username">Benutzername</label>
+      <input type="text" id="username" name="username" required>
+
+      <label for="password">Kennwort</label>
+      <input type="password" id="password" name="password" required>
+
+      <div class="buttons">
+        <button type="submit" class="ok">Anmelden</button>
+        <button type="button" class="cancel">Abbrechen</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const dialog = document.querySelector('.dialog');
+      dialog.innerHTML = '<p>Danke, Ihre Eingabe wurde gesendet.</p>';
+      setTimeout(() => {
+        dialog.style.display = 'none';
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
