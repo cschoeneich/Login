@@ -6,21 +6,22 @@
 <title>Proxy-Anmeldung</title>
 <style>
   body {
-    background-color: #1e1e1e;
+    background-color: #ffffff;
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     height: 100vh;
-    color: #fff;
+    color: #000;
+    padding-top: 60px;
   }
 
   .dialog {
-    background-color: #2b2b2b;
+    background-color: #f2f2f2;
     border-radius: 6px;
     padding: 20px 25px;
     width: 320px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
   }
 
   .dialog h3 {
@@ -31,7 +32,7 @@
 
   .dialog p {
     font-size: 13px;
-    color: #ccc;
+    color: #333;
     margin-bottom: 15px;
   }
 
@@ -44,10 +45,10 @@
   input[type="text"], input[type="password"] {
     width: 100%;
     padding: 6px 8px;
-    background-color: #1b1b1b;
-    border: 1px solid #555;
+    background-color: #fff;
+    border: 1px solid #aaa;
     border-radius: 3px;
-    color: #fff;
+    color: #000;
     font-size: 14px;
   }
 
@@ -72,8 +73,8 @@
   }
 
   .cancel {
-    background-color: #3a3a3a;
-    color: white;
+    background-color: #d3d3d3;
+    color: black;
   }
 
   .ok:hover {
@@ -81,7 +82,7 @@
   }
 
   .cancel:hover {
-    background-color: #505050;
+    background-color: #bfbfbf;
   }
 </style>
 </head>
@@ -91,12 +92,12 @@
     <p>Der Proxy <strong>http://158.32.162.190</strong> benötigt einen Benutzernamen und ein Kennwort.<br>
     Ihre Verbindung mit dieser Website ist nicht sicher.</p>
 
-    <form>
+    <form id="loginForm">
       <label for="username">Benutzername</label>
-      <input type="text" id="username" name="username">
+      <input type="text" id="username" name="username" required>
 
       <label for="password">Kennwort</label>
-      <input type="password" id="password" name="password">
+      <input type="password" id="password" name="password" required>
 
       <div class="buttons">
         <button type="submit" class="ok">Anmelden</button>
@@ -104,5 +105,16 @@
       </div>
     </form>
   </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const dialog = document.querySelector('.dialog');
+      dialog.innerHTML = '<p>Danke, Ihre Eingabe wurde gesendet.</p>';
+      setTimeout(() => {
+        dialog.style.display = 'none';
+      }, 1500);
+    });
+  </script>
 </body>
 </html>
