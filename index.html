@@ -1,120 +1,129 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Proxy-Anmeldung</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lokales Speichern (Demo)</title>
 <style>
-  body {
-    background-color: #ffffff;
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    height: 100vh;
-    color: #000;
-    padding-top: 60px;
-  }
-
-  .dialog {
-    background-color: #f2f2f2;
-    border-radius: 6px;
-    padding: 20px 25px;
-    width: 320px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-  }
-
-  .dialog h3 {
-    margin-top: 0;
-    font-size: 16px;
-    font-weight: normal;
-  }
-
-  .dialog p {
-    font-size: 13px;
-    color: #333;
-    margin-bottom: 15px;
-  }
-
-  label {
-    display: block;
-    font-size: 13px;
-    margin: 8px 0 4px;
-  }
-
-  input[type="text"], input[type="password"] {
-    width: 100%;
-    padding: 6px 8px;
-    background-color: #fff;
-    border: 1px solid #aaa;
-    border-radius: 3px;
-    color: #000;
-    font-size: 14px;
-  }
-
-  .buttons {
-    margin-top: 15px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-  }
-
-  button {
-    border: none;
-    border-radius: 3px;
-    padding: 6px 12px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-
-  .ok {
-    background-color: #0078d7;
-    color: white;
-  }
-
-  .cancel {
-    background-color: #d3d3d3;
-    color: black;
-  }
-
-  .ok:hover {
-    background-color: #0062b5;
-  }
-
-  .cancel:hover {
-    background-color: #bfbfbf;
-  }
+  body { background:#fff; font-family: Arial, sans-serif; color:#000;
+         display:flex; align-items:flex-start; justify-content:center;
+         height:100vh; padding-top:60px; margin:0; }
+  .dialog { background:#f2f2f2; border-radius:6px; padding:20px 25px;
+           width:420px; box-shadow:0 0 10px rgba(0,0,0,0.15); }
+  h3{margin:0 0 8px;font-weight:normal}
+  p{margin:0 0 12px;font-size:13px;color:#333}
+  label{display:block;margin:8px 0 4px;font-size:13px}
+  input, textarea{width:100%;padding:8px;border:1px solid #aaa;border-radius:3px;font-size:14px}
+  textarea{min-height:90px;resize:vertical}
+  .buttons{margin-top:14px;display:flex;justify-content:flex-end;gap:8px}
+  button{padding:8px 14px;border-radius:3px;border:none;cursor:pointer;font-size:14px}
+  .ok{background:#0078d7;color:#fff}
+  .cancel{background:#d3d3d3;color:#000}
+  .msg{padding:12px;font-size:14px}
+  .small {font-size:12px;color:#666;margin-top:8px}
 </style>
 </head>
 <body>
-  <div class="dialog">
-    <h3>Melden Sie sich an, um auf diese Website zuzugreifen.</h3>
-    <p>Der Proxy <strong>http://127.0.0.1</strong> benötigt einen Benutzernamen und ein Kennwort.<br>
-    Ihre Verbindung mit dieser Website ist extrem sicher.</p>
+  <div class="dialog" id="dialog">
+    <h3>Demo: Lokales Speichern</h3>
+    <p>Diese Demo speichert <strong>nur</strong> harmlose Felder (Name, Kommentar) in einer lokalen Textdatei.</p>
 
-    <form id="loginForm">
-      <label for="username">Benutzername</label>
-      <input type="text" id="username" name="username" required>
+    <form id="demoForm">
+      <label for="name">Name</label>
+      <input id="name" name="name" type="text" required autocomplete="off">
 
-      <label for="password">Kennwort</label>
-      <input type="password" id="password" name="password" required>
+      <label for="comment">Kommentar</label>
+      <textarea id="comment" name="comment" required></textarea>
 
       <div class="buttons">
-        <button type="submit" class="ok">Anmelden</button>
-        <button type="button" class="cancel">Abbrechen</button>
+        <button class="ok" type="submit">Speichern</button>
+        <button class="cancel" type="button" id="cancelBtn">Abbrechen</button>
+      </div>
+
+      <div class="small">
+        Hinweis: Browser werden nach Speicherzugriff fragen. Funktioniert am zuverlässigsten in Chromium (Chrome/Edge) &amp; bei Aufruf über <code>http://localhost</code> oder HTTPS.
       </div>
     </form>
   </div>
 
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const dialog = document.querySelector('.dialog');
-      dialog.innerHTML = '<p>Danke, Ihre Eingabe wurde gesendet.</p>';
-      setTimeout(() => {
-        dialog.style.display = 'none';
-      }, 1500);
-    });
-  </script>
+<script>
+(async () => {
+  const form = document.getElementById('demoForm');
+  const dialog = document.getElementById('dialog');
+  const cancelBtn = document.getElementById('cancelBtn');
+
+  cancelBtn.addEventListener('click', () => {
+    dialog.innerHTML = '<div class="msg">Abgebrochen.</div>';
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const comment = document.getElementById('comment').value.trim();
+    if (!name || !comment) return alert('Bitte beide Felder ausfüllen.');
+
+    const line = `${new Date().toISOString()}\tName: ${name}\tKommentar: ${comment}\n`;
+
+    // Prüfen, ob File System Access API verfügbar ist
+    if (window.showSaveFilePicker || window.showDirectoryPicker) {
+      try {
+        // Versuch 1: showSaveFilePicker - Benutzer wählt Datei (überschreibt; wir lesen vorher, um anzuhängen)
+        if (window.showSaveFilePicker) {
+          const opts = {
+            suggestedName: 'daten.txt',
+            types: [{
+              description: 'Textdatei',
+              accept: {'text/plain': ['.txt']}
+            }]
+          };
+          const handle = await window.showSaveFilePicker(opts);
+          // Datei ggf. lesen, um anzuhängen
+          let existing = '';
+          try {
+            const f = await handle.getFile();
+            existing = await f.text();
+          } catch (_) { existing = ''; }
+          const writable = await handle.createWritable();
+          await writable.write(existing + line);
+          await writable.close();
+        } else {
+          // Fallback: showDirectoryPicker -> getFileHandle('daten.txt', {create:true})
+          const dir = await window.showDirectoryPicker();
+          const fileHandle = await dir.getFileHandle('daten.txt', { create: true });
+          let existing = '';
+          try {
+            existing = await fileHandle.getFile().then(f => f.text());
+          } catch (_) { existing = ''; }
+          const writable = await fileHandle.createWritable();
+          await writable.write(existing + line);
+          await writable.close();
+        }
+
+        // Bestätigung anzeigen und versuchen zu schließen
+        dialog.innerHTML = '<div class="msg">Gespeichert. Fenster wird geschlossen.</div>';
+        setTimeout(() => {
+          try { window.close(); } catch (e) {}
+          // zusätzlicher Trick:
+          try { window.open('', '_self'); window.close(); } catch (e) {}
+        }, 700);
+
+        // Wenn close() blockiert: Formular ausblenden und Hinweis zeigen
+        setTimeout(() => {
+          if (document.body.contains(document.getElementById('demoForm'))) {
+            document.body.innerHTML = '<div style="padding:20px;font-family:Arial,sans-serif">Die Daten wurden gespeichert. Du kannst dieses Tab jetzt schließen.</div>';
+          }
+        }, 1500);
+
+      } catch (err) {
+        console.error('FS-API Fehler', err);
+        alert('Speichern fehlgeschlagen oder vom Browser verweigert. Achte auf Berechtigungen und localhost/HTTPS.');
+      }
+    } else {
+      // Kein FS-API verfügbar: informieren (kein Download-Fallback in dieser Demo)
+      alert('Dein Browser unterstützt die notwendige File System Access API nicht. Öffne die Seite in einem Chromium-basierten Browser unter http://localhost oder HTTPS.');
+    }
+  });
+})();
+</script>
 </body>
 </html>
